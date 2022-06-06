@@ -5,7 +5,7 @@ namespace FinanceNewsTicker.Services
 {
     public interface INewsService
     {
-       FinanceNews GetFinanceNews();
+       FinanceNews GetFinanceNews(int offset);
     }
 
 
@@ -16,7 +16,7 @@ namespace FinanceNewsTicker.Services
         {
             _configuration = configuration;
         }
-        public FinanceNews GetFinanceNews()
+        public FinanceNews GetFinanceNews(int offset)
         {
             string apiKey = _configuration.GetValue<string>("API_KEY");
             string baseUrl = _configuration.GetValue<string>("API_URL");
@@ -24,8 +24,9 @@ namespace FinanceNewsTicker.Services
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(baseUrl);
+                var parameters = string.Format("?apikey={0}&offset={1}&date={2}&sort={3}", apiKey, offset,"today","desc");
 
-                HttpResponseMessage response = client.GetAsync("?apikey=" + apiKey).Result;
+                HttpResponseMessage response = client.GetAsync(parameters).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     var result = response.Content.ReadAsStringAsync().Result;
